@@ -264,26 +264,49 @@ func (s *httpServer) channelHandler(w http.ResponseWriter, req *http.Request, to
 		firstHost = channelStats.HostStats[0]
 	}
 
-	p := struct {
-		Title          string
-		GraphOptions   *GraphOptions
-		Version        string
-		Topic          string
-		Channel        string
-		TopicProducers []string
-		ChannelStats   *lookupd.ChannelStats
-		FirstHost      *lookupd.ChannelStats
-		HasE2eLatency  bool
+	// create the client over stats
+	hostMap := make(map[string]int)
+	clientCount := 0
+	finishCount := 0
+	for _, client := range channelStats.Clients {
+		hostInfo := strings.Split(client, ":")
+		hostMap[hostInfo[0]] += 1
+		clientCount += 0
+		finishCount += client.FinishCount
+	}
+
+	channelOverview := struct {
+		HostMap          map[string]int
+		ClientCount      int
+		FinishedMessages int64
 	}{
-		Title:          fmt.Sprintf("NSQ %s / %s", topicName, channelName),
-		GraphOptions:   NewGraphOptions(w, req, reqParams, s.context),
-		Version:        util.BINARY_VERSION,
-		Topic:          topicName,
-		Channel:        channelName,
-		TopicProducers: producers,
-		ChannelStats:   channelStats,
-		FirstHost:      firstHost,
-		HasE2eLatency:  hasE2eLatency,
+		HostMap:     hostMap,
+		ClientCount: clientCount,
+		FinishCount: finishCount,
+	}
+
+	p := struct {
+		Title           string
+		GraphOptions    *GraphOptions
+		Version         string
+		Topic           string
+		Channel         string
+		TopicProducers  []string
+		ChannelStats    *lookupd.ChannelStats
+		FirstHost       *lookupd.ChannelStats
+		HasE2eLatency   bool
+		ChannelOverview *channelOverview
+	}{
+		Title:           fmt.Sprintf("NSQ %s / %s", topicName, channelName),
+		GraphOptions:    NewGraphOptions(w, req, reqParams, s.context),
+		Version:         util.BINARY_VERSION,
+		Topic:           topicName,
+		Channel:         channelName,
+		TopicProducers:  producers,
+		ChannelStats:    channelStats,
+		FirstHost:       firstHost,
+		HasE2eLatency:   hasE2eLatency,
+		ChannelOverview: channelOverview,
 	}
 
 	err = templates.T.ExecuteTemplate(w, "channel.html", p)

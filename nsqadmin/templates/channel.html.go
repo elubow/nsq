@@ -178,9 +178,32 @@ func init() {
 </table>
 </div></div>
 
+
+<h4>Overview</h4>
+<div class="row-fluid"><div class="span12">
+<table class="table table-bordered table-condensed">
+    <tr>
+        <th>Connected Hosts</th>
+        <th>Connected Clients</th>
+        <th>Finished Messages</th>
+    </tr>
+    <tr>
+        <td>{{len .ChannelOverview.HostCount}}</td>
+        <td>{{.ChannelOverview.ClientCount}}</td>
+        <td>{{.ChannelOverview.FinishCount | commafy}}</td>
+    </tr>
+</table>
+<table>
+    <tr>
+        {{range .ChannelOverview.HostMap}}
+        <td>{{host}}: {{clients}}</td>
+        {{end}}
+    </tr>
+</div></div>
+
+
 <h4>Client Connections</h4>
 
-<div class="row-fluid"><div class="span12">
 {{if not .ChannelStats.Clients}}
 <div class="alert"><h4>Notice</h4>No clients connected to this channel</div>
 {{else}}
