@@ -193,13 +193,12 @@ func init() {
         <td>{{.ChannelOverview.FinishCount | commafy}}</td>
     </tr>
 </table>
-<table>
-    <tr>
-        {{range .ChannelOverview.HostMap}}
-        <td>{{host}}: {{clients}}</td>
-        {{end}}
-    </tr>
 </div></div>
+<div class="row">
+    {{range $host, $clientCount := ChannelOverview.HostMap}}
+        <div class="col-md-4">{{$host}}: {{$clientCount}}</div>
+    {{end}}
+</div>
 
 
 <h4>Client Connections</h4>
