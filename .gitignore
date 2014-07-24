@@ -44,3 +44,9 @@ profile
 
 # vim stuff
 *.sw[op]
+profile
+nsqadmin
+nsqd
+nsqlookupd
+apps
+bench
